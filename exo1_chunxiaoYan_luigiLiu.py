@@ -31,28 +31,27 @@ def make_dataset_customed(text):
 
 def split(file, ratio = [80, 10, 10]) :
 
-	files_out = [file + u'.train',\
-                     file + u'.dev'  ,\
-	             file + u'.test']
+	fout   = [file + u'.train', file + u'.dev', file + u'.test']
+	corpus = [              [],             [],              []]
 
 	with codecs.open(file, encoding = 'utf-8') as f :
 		sents = f.read().split(u'\n\n')
 
-	subcorpus = []
-	cursor = 0
+	# échantillonnage dynamique or waterfill method
 	for sent in sents :
-		subcorpus.append(sent)
-		if len(subcorpus) * sum(ratio) >= len(sents) * ratio[cursor] :
-			with codecs.open(files_out[cursor], 'w', 'utf-8') as f :
-				f.write(u'\n\n'.join(subcorpus))
-				subcorpus = []
-			cursor += 1
+		if   not corpus[0] : corpus[0].append(sent)
+		elif not corpus[1] : corpus[1].append(sent)
+		elif not corpus[2] : corpus[2].append(sent)
+		else :
+			want = [ratio[0] * len(corpus[1]) * len(corpus[2]),\
+			 	ratio[1] * len(corpus[0]) * len(corpus[2]),\
+				ratio[2] * len(corpus[0]) * len(corpus[1])]
+			want_id = sorted(zip(range(3), want), key = lambda x : x[1], reverse = True)[0][0]
+			corpus[want_id].append(sent)
 
-	if subcorpus :
-		try :
-			with codecs.open(files_out[cursor], 'w', encoding = 'utf-8') as f :
-				f.write(subcorpus)
-		except IndexError : pass
+	for file, corpora in zip(fout, corpus) :
+		with codecs.open(file, 'w', 'utf-8') as f :
+			f.write(u'\n\n'.join(corpora))
 
 
 def read_corpus(file) :
