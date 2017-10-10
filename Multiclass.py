@@ -33,11 +33,13 @@ class MultiClassPerceptron:
 
     def train(self,dataset,step_size=0.1,max_epochs=50):
 
+        model_acc = None
         self.Y = list(set([y for (y,x) in dataset]))
 
         for e in range(max_epochs):
             
             loss = 0.0            
+            e = 0
             for y,x in dataset:
                 ypred = self.tag(x)
                 if y != ypred:
@@ -45,6 +47,8 @@ class MultiClassPerceptron:
                     delta_ref  = SparseWeightVector.code_phi(x,y)
                     delta_pred = SparseWeightVector.code_phi(x,ypred)
                     self.model += step_size*(delta_ref-delta_pred)
+                    if not model_acc : self.model_acc = self.model; e+=1
+                    else : model_acc += self.model; e+=1 ; self.model = model_acc * (1 / float(e))
             print ("Loss (#errors) = ",loss)
             if loss == 0.0:
                 return

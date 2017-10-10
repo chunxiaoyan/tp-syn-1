@@ -1,5 +1,9 @@
+#! /usr/bin/env python3
 #coding:utf-8
 
+
+from SparseWeightVector import SparseWeightVector
+from math import exp,log
 import codecs
 
 # function repise et légèrement modifiée de celle intitulée make_dataset dans Multiclass.py
@@ -70,6 +74,50 @@ def read_corpus(file) :
 				if sent : sent += u' '
 				sent += u'/'.join([cols[1], cols[3]])
 	return make_dataset_customed(sents)
+	
+class AvgPerceptron:
+
+    def __init__(self):
+        
+        self.model   = SparseWeightVector()
+        self.Y       = [] #classes
+
+    def train(self,dataset,step_size=0.1,max_epochs=50):
+
+        model_acc = None
+        self.Y = list(set([y for (y,x) in dataset]))
+
+        for e in range(max_epochs):
+            
+            loss = 0.0            
+            e = 0
+            for y,x in dataset:
+                ypred = self.tag(x)
+                if y != ypred:
+                    loss += 1.0
+                    delta_ref  = SparseWeightVector.code_phi(x,y)
+                    delta_pred = SparseWeightVector.code_phi(x,ypred)
+                    self.model += step_size*(delta_ref-delta_pred)
+		    # la moyenne du passé accumulé des poids
+                    if not model_acc : self.model_acc = self.model; e+=1
+                    else : model_acc += self.model; e+=1 ; self.model = model_acc * (1 / float(e))
+            print ("Loss (#errors) = ",loss)
+            if loss == 0.0:
+                return
+                     
+    def predict(self,dataline):
+        return list([self.model.dot(dataline,c) for c in self.Y])
+    
+    def tag(self,dataline):
+
+        scores = self.predict(dataline)
+        imax   = scores.index(max(scores)) 
+        return self.Y[ imax ]
+
+    def test(self,dataset):
+
+        result = list([ (y == self.tag(x)) for y,x in dataset ])
+        return sum(result) / len(result)
 
 if __name__ == '__main__' :
 
@@ -77,4 +125,8 @@ if __name__ == '__main__' :
 	trainc = read_corpus('sequoia-corpus.np_conll.train')
 	devc = read_corpus('sequoia-corpus.np_conll.dev')
 	testc = read_corpus('sequoia-corpus.np_conll.test')
+
+	p = AvgPerceptron()
+	p.train(trainc)
+	print(p.test(testc))
 	
