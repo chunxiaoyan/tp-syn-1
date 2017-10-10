@@ -55,6 +55,7 @@ fichierMulticlass.py comme source d’inspiration.
 On attend le code qui répond aux exercices (1,2,3) ci-dessus enregistré dans un fichier nomméexo1-nombinomes.py La procédure de notation sera 
 partiellement automatisée et exécutera (au moins) la séquence d’instructions suivantes.
 
+```
 split(’sequoia-corpus.np_conll’)
 trainc = read_corpus(’sequoia-corpus.np_conll.train’)
 devc = read_corpus(’sequoia-corpus.np_conll.dev’)
@@ -62,3 +63,4 @@ testc = read_corpus(’sequoia-corpus.np_conll.test’)
 p = AvgPerceptron()
 p.train(trainc,devc)
 print(p.test(testc))
+```
