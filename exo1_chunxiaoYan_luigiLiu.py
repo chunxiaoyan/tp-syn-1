@@ -29,16 +29,16 @@ def make_dataset_customed(text):
                 
     return dataset
 
-def split(file, ratio = [80, 10, 10]) :
+def split(file, ratio = [80, 10, 10], limit = -1) :
 
 	fout   = [file + u'.train', file + u'.dev', file + u'.test']
 	corpus = [              [],             [],              []]
 
 	with codecs.open(file, encoding = 'utf-8') as f :
-		sents = f.read().split(u'\n\n')
+		allsents = f.read().split(u'\n\n')
 
 	# échantillonnage dynamique or waterfill method
-	for sent in sents :
+	for sent in allsents :
 		if   not corpus[0] : corpus[0].append(sent)
 		elif not corpus[1] : corpus[1].append(sent)
 		elif not corpus[2] : corpus[2].append(sent)
@@ -48,6 +48,9 @@ def split(file, ratio = [80, 10, 10]) :
 				ratio[2] * len(corpus[0]) * len(corpus[1])]
 			want_id = sorted(zip(range(3), want), key = lambda x : x[1], reverse = True)[0][0]
 			corpus[want_id].append(sent)
+
+		lenc = sum([len(corpora) for corpora in corpus])
+		if lenc >= limit and limit > 0 : break
 
 	for file, corpora in zip(fout, corpus) :
 		with codecs.open(file, 'w', 'utf-8') as f :
