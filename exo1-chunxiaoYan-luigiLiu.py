@@ -2,34 +2,29 @@
 
 import codecs
 
-def split(file) :
+def split(file, ratio = [80, 10, 10]) :
 
-	"""
-	split('sequoia-corpus.np_conll')
-	trainc = read_corpus('sequoia-corpus.np_conll.train')
-	devc = read_corpus('sequoia-corpus.np_conll.dev')
-	testc = read_corpus('sequoia-corpus.np_conll.test')
-	"""
+	files_out = [file + u'.train',\
+                     file + u'.dev'  ,\
+	             file + u'.test']
 
 	with codecs.open(file, encoding = 'utf-8') as f :
 		sents = f.read().split(u'\n\n')
-		n_sents = len(sents)
 
-	subcorpus = u''
-	for i,sent in enumerate(sents) :
-		if subcorpus : subcorpus += u'\n\n'
-		subcorpus += sent
-		if i == n_sents * .8 :
-			with codecs.open(file + u'.train', 'w', encoding = 'utf-8') as f :
-				f.write(subcorpus)
-				subcorpus = u''
-		elif i == n_sents * .9 :
-			with codecs.open(file + u'.dev', 'w', encoding = 'utf-8') as f :
-				f.write(subcorpus)
-				subcorpus = u''
-	with codecs.open(file + u'.test', 'w', encoding = 'utf-8') as f :
-		f.write(subcorpus)
-		subcorpus = u''
+	subcorpus = []
+	cursor = 0
+	for sent in sents :
+		subcorpus.append(sent)
+		if len(subcorpus) * sum(ratio) >= len(sents) * ratio[cursor] :
+			with codecs.open(files_out[cursor], 'w', 'utf-8') as f :
+				f.write(u'\n\n'.join(subcorpus))
+				subcorpus = []
+			cursor += 1
+
+	if subcorpus :
+		with codecs.open(files_out[cursor], 'w', encoding = 'utf-8') as f :
+			f.write(subcorpus)
+
 
 def read_corpus(file) :
 
