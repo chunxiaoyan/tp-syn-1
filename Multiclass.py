@@ -115,23 +115,15 @@ class MultinomialLogistic:
         result = list([ (y == self.tag(x)) for y,x in dataset ])
         return sum(result) / len(result)
 
-    
-"""        
-corpus = ['Le/D chat/N mange/V la/D souris/N ./PONCT','La/D souris/N danse/V ./PONCT','Il/Pro la/Pro voit/V dans/P la/D cour/N ./PONCT','Le/D chat/N la/Pro mange/V ./PONCT',"Le/D chat/V la/Pro mange/V"]
-D = make_dataset(corpus)
-print(D)
-"""
-split('sequoia-corpus.np_conll')
+split('sequoia-corpus.np_conll', limit = 10000)
 D_trainc = read_corpus('sequoia-corpus.np_conll.train')
 D_devc = read_corpus('sequoia-corpus.np_conll.dev')
 D_testc = read_corpus('sequoia-corpus.np_conll.test')
 
-limit = 10000
-
 maxent = MultinomialLogistic()
-maxent.train(D_trainc[:limit],step_size=1.0)
+maxent.train(D_trainc,step_size=1.0)
 print(maxent.test(D_testc))
 
 perc = MultiClassPerceptron()
-perc.train(D_trainc[:limit],step_size=1.0)
+perc.train(D_trainc,step_size=1.0)
 print(perc.test(D_testc))
