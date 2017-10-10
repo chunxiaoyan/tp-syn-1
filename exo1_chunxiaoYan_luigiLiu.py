@@ -49,8 +49,10 @@ def split(file, ratio = [80, 10, 10]) :
 			cursor += 1
 
 	if subcorpus :
-		with codecs.open(files_out[cursor], 'w', encoding = 'utf-8') as f :
-			f.write(subcorpus)
+		try :
+			with codecs.open(files_out[cursor], 'w', encoding = 'utf-8') as f :
+				f.write(subcorpus)
+		except IndexError : pass
 
 
 def read_corpus(file) :
@@ -73,6 +75,4 @@ if __name__ == '__main__' :
 	trainc = read_corpus('sequoia-corpus.np_conll.train')
 	devc = read_corpus('sequoia-corpus.np_conll.dev')
 	testc = read_corpus('sequoia-corpus.np_conll.test')
-
-	print (trainc)
 	
