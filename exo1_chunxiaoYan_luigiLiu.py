@@ -82,10 +82,13 @@ class AvgPerceptron:
         self.model   = SparseWeightVector()
         self.Y       = [] #classes
 
-    def train(self,dataset,step_size=0.1,max_epochs=50):
+    def train(self,dataset,dev_dataset,step_size=0.1,max_epochs=50):
 
         model_acc = None
         self.Y = list(set([y for (y,x) in dataset]))
+
+	# pour le moment, nous n'avons pas encore profité du corpus 
+	# de développement pour l'amélioration -> à ajouter
 
         for e in range(max_epochs):
             
@@ -127,6 +130,6 @@ if __name__ == '__main__' :
 	testc = read_corpus('sequoia-corpus.np_conll.test')
 
 	p = AvgPerceptron()
-	p.train(trainc)
+	p.train(trainc,devc)
 	print(p.test(testc))
 	
