@@ -13,8 +13,8 @@ def make_dataset_customed(text):
     EOL = '$$$'
 
     def sep_token_pos(token_pos) :
-	tmp = token_pos.split(u'/')
-	return tuple([u'/'.join(tmp[:-1]),tmp[-1]])
+        tmp = token_pos.split(u'/')
+        return tuple([u'/'.join(tmp[:-1]),tmp[-1]])
 
     dataset = []
     for line in text:
